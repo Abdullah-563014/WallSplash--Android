@@ -36,6 +36,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +71,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.wallsplash.bdapp.MainActivity;
+import com.wallsplash.bdapp.bean.ExploreBean;
+import com.wallsplash.bdapp.bean.ExploreCatBean;
+import com.wallsplash.bdapp.exploredetail.ExploreCatAdapter;
+import com.wallsplash.bdapp.exploredetail.ExploreDetailFragment;
+import com.wallsplash.bdapp.exploredetail.ExplorePhotoByIdAdapter;
 import com.wallsplash.bdapp.search.SearchFragment;
 import com.wallsplash.bdapp.bean.PhotosBean;
 import com.wallsplash.bdapp.bean.TrendingBean;
@@ -82,32 +88,29 @@ import com.wallsplash.bdapp.wallsplash.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements NewPhotosAdapter.OnPhotoSelectedListner, TrendingAdapter.OnCategorySelectedListner, TrendingPhotoByIdAdapter.OnCategorybyidSelectedListner {
+public class HomeFragment extends Fragment implements ExplorePhotoByIdAdapter.OnCategorybyidSelectedListner, ExplorePhotoByIdAdapter.OnLoadMoreListener, ExploreCatAdapter.OnCategorySelectedListner {
 
 
-    private static final int EXTERNAL_STORAGE_PERMISSION_CONSTANT = 1;
-    private static final int REQUEST_PERMISSION_SETTING = 0;
+    @BindView(R.id.llNorecord)
+    LinearLayout llNorecord;
+
+    @BindView(R.id.rvExplorePhotoById)
+    RecyclerView rvExplorePhotoById;
+
+    @BindView(R.id.rvExploreCat)
+    RecyclerView rvExploreCat;
+
     Unbinder unbinder;
-    @BindView(R.id.rvTrendingphotosbyId)
-    RecyclerView rvTrendingphotosbyId;
-    String trendId;
-    private NewPhotosAdapter newPhotosAdapter;
-    private ArrayList<PhotosBean> newPhotoslist = new ArrayList<>();
+    ProgressDialog progressDialog;
+    private ExplorePhotoByIdAdapter explorePhotoByIdAdapter;
+    private ArrayList<ExploreBean> explorePhotosByIdList = new ArrayList<>();
 
-    private TrendingAdapter trendingAdapter;
-    private ArrayList<TrendingBean> trendingList = new ArrayList<>();
+    private ExploreCatAdapter exploreCatAdapter;
+    private ArrayList<ExploreCatBean> exploreCatlist = new ArrayList<>();
 
-    private TrendingPhotoByIdAdapter trendingPhotoByIdAdapter;
-    private ArrayList<TrendingBean> trendingPhotosByIdList = new ArrayList<>();
-
-    private ArrayList<PhotosBean> randomList = new ArrayList<>();
-    private ProgressDialog progressDialog;
+    String collectionId;
     String exploretitle;
-    private AsyncTask mMyTask;
-    private ProgressDialog mProgressDialog;
-    private static final int PERMISSION_REQUEST_CODE = 1;
-    String wantPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-    private AdView mAdView;
+    private int per_page = 1;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -119,25 +122,11 @@ public class HomeFragment extends Fragment implements NewPhotosAdapter.OnPhotoSe
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAdView = view.findViewById(R.id.adView);
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.setTitle("AsyncTask");
-        mProgressDialog.setMessage("Please wait, we are downloading your image file...");
-        if (!checkPermission(wantPermission)) {
-            requestPermission(wantPermission);
-        }
-        ProgressDialogSetup();
-        getTrending();
-        return view;
-    }
+        collectionId = "1410291";
 
-    public void ProgressDialogSetup() {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.please_wait));
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
+        ProgressDialogSetup();
+        getExploreCat();
+        return view;
     }
 
     @Override
@@ -146,125 +135,110 @@ public class HomeFragment extends Fragment implements NewPhotosAdapter.OnPhotoSe
         unbinder.unbind();
     }
 
-    private void loadFragment(Fragment fragment) {
-        String backStateName = fragment.getClass().getName();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        boolean fragmentPopped = fragmentManager.popBackStackImmediate(backStateName, 0);
-        if (!fragmentPopped) { //fragment not in back stack, create it.
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.add(R.id.fl_container, fragment, null);
-            ft.hide(HomeFragment.this);
-            ft.addToBackStack(backStateName);
-            ft.commit();
-        }
+    public void ProgressDialogSetup() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("please wait");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
     }
 
-    private boolean checkPermission(String permission) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            int result = ContextCompat.checkSelfPermission(getActivity(), permission);
-            if (result == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+    public static HomeFragment newInstance(String ID) {
+        HomeFragment homeFragment = new HomeFragment();
+        Bundle args = new Bundle();
+        args.putString(Config.collectionid, ID);
+        homeFragment.setArguments(args);
+        return homeFragment;
     }
 
-    private void requestPermission(String permission) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
-            Toast.makeText(getActivity(), "Write external storage permission allows us to write data. \n" +
-                    "                    Please allow in App Settings for additional functionality", Toast.LENGTH_LONG).show();
+    private void getExplorePhotosById(final int per_page) {
+        if (per_page == 1) {
+            progressDialog.show();
         }
-        ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                 /*   Toast.makeText(getActivity(), "Permission Granted. Now you can write data.",
-                            Toast.LENGTH_LONG).show();*/
-                } else {
-                    Toast.makeText(getActivity(), "Permission Denied. You cannot write data.",
-                            Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
-    }
-
-    private void getTrending() {
-
-        progressDialog.show();
-        Call<JsonElement> call1 = RestClient.post().getTrending(Config.unsplash_access_key);
+        Call<JsonElement> call1 = RestClient.post().getSearch(exploretitle,per_page,30,Config.unsplash_access_key);
         call1.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    trendingList.clear();
-                    JSONArray jsonArr = null;
-                    try {
-                        jsonArr = new JSONArray(response.body().toString());
-
-
-                        if (jsonArr.length() > 0) {
-                            for (int i = 0; i < jsonArr.length(); i++) {
-                                JSONObject json2 = jsonArr.getJSONObject(i);
-                                String id = json2.getString("id");
-                                String title = json2.getString("title");
-                                trendingList.add(new TrendingBean(id, title, false));
-                            }
-                            bindCategoryAdapter();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                //  progressDialog.dismiss()
+                if (per_page == 1) {
+                    progressDialog.dismiss();
                 }
-            }
+                if (response.body() == null) {
+                    explorePhotoByIdAdapter.setLoaded();
+                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                }
 
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                progressDialog.dismiss();
-
-            }
-        });
-
-    }
-
-    private void getTrendPhotosById() {
-
-        Call<JsonElement> call1 = RestClient.post().getTrendingPhotosbyId(trendId, 1, 12, Config.unsplash_access_key);
-        call1.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                //  progressDialog.dismiss();
-
+                // explorePhotosByIdList.clear();
                 Log.e("FeatureNews", response.body().toString());
                 if (response.isSuccessful()) {
 
-                    trendingPhotosByIdList.clear();
-                    JSONArray jsonArr = null;
+                    // explorePhotosByIdList.clear();
+                    JSONObject jsonArr = null;
                     try {
-                        jsonArr = new JSONArray(response.body().toString());
+                        jsonArr = new JSONObject(response.body().toString());
+
+                        JSONArray json = jsonArr.getJSONArray("results");
+                        if (per_page == 1) {
+                            explorePhotosByIdList.clear();
+                            if (json.length() > 0) {
+
+                                for (int i = 0; i < json.length(); i++) {
+                                    JSONObject json2 = json.getJSONObject(i);
+                                    String id = json2.getString("id");
+                                    String description=json2.getString("description");
+
+                                    JSONObject object = json2.getJSONObject("urls");
+                                    String url = object.getString("regular");
+                                    explorePhotosByIdList.add(new ExploreBean(id, description, url));
+
+                                }
+                                bindExplorePhotosByIdAdapternews();
+                                //  rvTrending.setAdapter(trendingAdapter);
+
+                            }else {
+                                if (response.body() == null) {
+                                    explorePhotoByIdAdapter.setLoaded();
+                                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                                }else {
+                                    rvExplorePhotoById.setVisibility(View.GONE);
+                                    llNorecord.setVisibility(View.VISIBLE);
+                                }
 
 
-                        if (jsonArr.length() > 0) {
-                            for (int i = 0; i < jsonArr.length(); i++) {
-                                JSONObject json2 = jsonArr.getJSONObject(i);
-                                String id = json2.getString("id");
-
-                                JSONObject object = json2.getJSONObject("urls");
-                                String url = object.getString("regular");
-                                trendingPhotosByIdList.add(new TrendingBean(id, url));
                             }
-                            bindTrendPhotosByIdAdapternews();
+                        }else {
+                            if (json.length() > 0) {
+                                explorePhotosByIdList.remove(explorePhotosByIdList.size()-1);
+                                explorePhotoByIdAdapter.notifyItemRemoved(explorePhotosByIdList.size());
+                                for (int i = 0; i < json.length(); i++) {
+                                    JSONObject json2 = json.getJSONObject(i);
+                                    String id = json2.getString("id");
+                                    String description=json2.getString("description");
+
+                                    JSONObject object = json2.getJSONObject("urls");
+                                    String url = object.getString("regular");
+                                    explorePhotosByIdList.add(new ExploreBean(id, description, url));
+                                    explorePhotoByIdAdapter.setLoaded();
+                                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                                }
+                            }else {
+                                explorePhotoByIdAdapter.setLoaded();
+                                explorePhotoByIdAdapter.notifyDataSetChanged();
+                            }
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+
+                }else {
+                    if (per_page == 1) {
+                        progressDialog.dismiss();
+                    }
+
+                    explorePhotosByIdList.remove(explorePhotosByIdList.size() - 1);
+                    explorePhotoByIdAdapter.notifyItemRemoved(explorePhotosByIdList.size());
+
                 }
             }
 
@@ -277,61 +251,153 @@ public class HomeFragment extends Fragment implements NewPhotosAdapter.OnPhotoSe
 
     }
 
+    private void bindExplorePhotosByIdAdapternews() {
+
+        if (explorePhotosByIdList.size() > 0){
+            llNorecord.setVisibility(View.GONE);
+            rvExplorePhotoById.setVisibility(View.VISIBLE);
+            explorePhotoByIdAdapter = new ExplorePhotoByIdAdapter(getActivity(), explorePhotosByIdList,rvExplorePhotoById);
+            explorePhotoByIdAdapter.setOnCategorybyidSelectedListner(this);
+            explorePhotoByIdAdapter.setOnLoadMoreListener(this);
+            rvExplorePhotoById.setHasFixedSize(true);
+            rvExplorePhotoById.setItemAnimator(null);
+            //  StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+            //rvExplorePhotoById.setLayoutManager(layoutManager);
+
+            rvExplorePhotoById.setAdapter(explorePhotoByIdAdapter);
+        }else {
+            llNorecord.setVisibility(View.VISIBLE);
+            rvExplorePhotoById.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void getExploreCat() {
+
+        progressDialog.show();
+        Call<JsonElement> call1 = RestClient.post().getExploreCat(collectionId,Config.unsplash_access_key);
+        call1.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                progressDialog.dismiss();
+
+                if (response.isSuccessful()) {
+
+                    exploreCatlist.clear();
+                    JSONObject jsonArr = null;
+                    try {
+                        jsonArr = new JSONObject(response.body().toString());
+
+                        JSONArray jsonArray=jsonArr.getJSONArray("tags");
+
+                        if (jsonArr.length() > 0) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject json2 = jsonArray.getJSONObject(i);
+                                String title = json2.getString("title");
+                                String capsWordTitle = title.substring(0, 1).toUpperCase() + title.substring(1);
+
+
+                                exploreCatlist.add(new ExploreCatBean(capsWordTitle,false));
+
+                            }
+                            bindCategoryAdapter();
+                            //  rvTrending.setAdapter(trendingAdapter);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "error is "+t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
     private void bindCategoryAdapter() {
-        if (trendingList.size() > 0) {
-            trendingAdapter = new TrendingAdapter(getActivity(), trendingList);
-//            rvTrending.setAdapter(trendingAdapter);
-            trendId = trendingList.get(0).getId();
-            trendingList.get(0).setSelected(true);
+        if (exploreCatlist.size() > 0){
+            exploreCatAdapter = new ExploreCatAdapter(getActivity(), exploreCatlist);
+            rvExploreCat.setAdapter(exploreCatAdapter);
+            exploretitle=exploreCatlist.get(0).getTitle();
+
+            exploreCatlist.get(0).setSelected(true);
+        }else {
+
         }
-        trendingAdapter.setOnCategorySelectedListner(this);
-        trendingAdapter.notifyDataSetChanged();
-        getTrendPhotosById();
+
+        exploreCatAdapter.setOnCategorySelectedListner(this);
+
+        exploreCatAdapter.notifyDataSetChanged();
+
+        getExplorePhotosById(per_page);
     }
 
-    private void bindTrendPhotosByIdAdapternews() {
-        if (trendingPhotosByIdList.size() > 0) {
-            trendingPhotoByIdAdapter = new TrendingPhotoByIdAdapter(getActivity(), trendingPhotosByIdList);
-            trendingPhotoByIdAdapter.setOnCategorybyidSelectedListner(this);
-            rvTrendingphotosbyId.setAdapter(trendingPhotoByIdAdapter);
+    @OnClick(R.id.rvExplorePhotoById)
+    public void onViewClicked() {
+    }
+
+    private void loadFragment(Fragment fragment) {
+        String backStateName = fragment.getClass().getName();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate(backStateName, 0);
+        if (!fragmentPopped) { //fragment not in back stack, create it.
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.fl_container, fragment, null);
+            ft.hide(HomeFragment.this);
+            ft.addToBackStack(backStateName);
+            ft.commit();
+        }else {
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.add(R.id.fl_container, fragment, null);
+            ft.hide(HomeFragment.this);
+            if (fragment instanceof HomeFragment){
+
+            }else {
+                ft.addToBackStack(backStateName);
+            }
+            //ft.addToBackStack(backStateName);
+            ft.commit();
+
         }
     }
 
     @Override
-    public void setOnPhotoSelatedListner(int position, PhotosBean dataBean) {
-        DetailFragment newsDetailsFragment = DetailFragment.newInstance(dataBean.getId());
-        loadFragment(newsDetailsFragment);
-        /*Bundle bundle=new Bundle();
-        bundle.putString(Config.photoid,dataBean.getId());
-        DetailFragment newsDetailsFragment  = new DetailFragment();
-        newsDetailsFragment.setArguments(bundle);
-        loadFragment(newsDetailsFragment);*/
+    public void setOnCategorybyidSelatedListner(int position, ExploreBean exploreBean) {
+        HomeFragment homeFragment = HomeFragment.newInstance(exploreBean.getId());
+        loadFragment(homeFragment);
     }
 
     @Override
-    public void setOnCategorySelatedListner(int position, TrendingBean trendingBean) {
-        for (int i = 0; i < trendingList.size(); i++) {
-            trendingList.get(i).setSelected(false);
+    public void onLoadMore() {
+        Log.e("haint", "Load More");
+        if (!explorePhotoByIdAdapter.isLoading) {
+            explorePhotosByIdList.add(null);
+            explorePhotoByIdAdapter.notifyDataSetChanged();
+            per_page++;
+            getExplorePhotosById(per_page);
         }
-        if (trendingList.size() > 0) {
-            trendingAdapter.notifyDataSetChanged();
-            trendId = trendingBean.getId();
-            // setitem.setText(dataBean.getName());
-            getTrendPhotosById();
+    }
+
+    @Override
+    public void setOnCategorySelatedListner(int position, ExploreCatBean trendingBean) {
+        per_page = 1;
+        for (int i = 0; i < exploreCatlist.size(); i++) {
+            exploreCatlist.get(i).setSelected(false);
+        }
+        if (exploreCatlist.size()>0){
+
+            exploreCatAdapter.notifyDataSetChanged();
+            exploretitle= trendingBean.getTitle();
+
+            getExplorePhotosById(per_page);
             trendingBean.setSelected(true);
         }
-    }
-
-    @Override
-    public void setOnCategorybyidSelatedListner(int position, TrendingBean trendingBean) {
-        DetailFragment newsDetailsFragment = DetailFragment.newInstance(trendingBean.getId());
-        // loadFragment(newsDetailsFragment);
-        ((MainActivity) getActivity()).loadFragment(newsDetailsFragment);
-       /* Bundle bundle=new Bundle();
-        bundle.putString(Config.photoid,trendingBean.getId());
-        DetailFragment newsDetailsFragment  = new DetailFragment();
-        newsDetailsFragment.setArguments(bundle);
-        loadFragment(newsDetailsFragment);*/
     }
 
 }

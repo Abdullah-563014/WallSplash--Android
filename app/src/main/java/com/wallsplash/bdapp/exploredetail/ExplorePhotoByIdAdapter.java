@@ -59,23 +59,6 @@ public class ExplorePhotoByIdAdapter extends RecyclerView.Adapter<RecyclerView.V
                 }
             }
         });
-      /*  final StaggeredGridLayoutManager linearLayoutManager = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                totalItemCount = linearLayoutManager.getItemCount();
-                //   lastVisibleItem = linearLayoutManager.findLastVisibleItemPositions(null)[0];
-                lastVisibleItem = linearLayoutManager.findLastVisibleItemPositions(new int[linearLayoutManager.getSpanCount()])[0];
-
-                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    if (mOnLoadMoreListener != null) {
-                        mOnLoadMoreListener.onLoadMore();
-                    }
-                    isLoading = true;
-                }
-            }
-        });*/
 
     }
     @Override
