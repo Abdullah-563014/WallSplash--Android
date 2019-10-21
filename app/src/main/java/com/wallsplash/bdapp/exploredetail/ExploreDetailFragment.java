@@ -92,12 +92,14 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         super.onDestroyView();
         unbinder.unbind();
     }
+
     public void ProgressDialogSetup() {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("please wait");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
     }
+
     public static ExploreDetailFragment newInstance(String ID) {
         ExploreDetailFragment exploreDetailFragment = new ExploreDetailFragment();
         Bundle args = new Bundle();
@@ -105,6 +107,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         exploreDetailFragment.setArguments(args);
         return exploreDetailFragment;
     }
+
     private void getExplorePhotosById(final int per_page) {
         if (per_page == 1) {
             progressDialog.show();
@@ -205,6 +208,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         });
 
     }
+
     private void bindExplorePhotosByIdAdapternews() {
 
         if (explorePhotosByIdList.size() > 0){
@@ -225,6 +229,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         }
 
     }
+
     private void getExploreCat() {
 
         progressDialog.show();
@@ -272,6 +277,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         });
 
     }
+
     private void bindCategoryAdapter() {
         if (exploreCatlist.size() > 0){
             exploreCatAdapter = new ExploreCatAdapter(getActivity(), exploreCatlist);
@@ -289,9 +295,11 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
         getExplorePhotosById(per_page);
     }
+
     @OnClick(R.id.rvExplorePhotoById)
     public void onViewClicked() {
     }
+
     private void loadFragment(Fragment fragment) {
         String backStateName = fragment.getClass().getName();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -316,6 +324,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
         }
     }
+
     @Override
     public void setOnCategorybyidSelatedListner(int position, ExploreBean exploreBean) {
         DetailFragment newsDetailsFragment = DetailFragment.newInstance(exploreBean.getId());
