@@ -99,14 +99,6 @@ public class ExploreFragment extends Fragment implements ExploreAdapter.OnExplor
                 Log.e("Explore", response.body().toString());
                 if (response.isSuccessful()) {
 
-                   /* List<CollectionBean> photos = response.body();
-                    Log.d("Photos", "Photos Fetched " + photos.size());
-                    //add to adapter
-                    *//* page++;*//*
-                    collectionAdapter.addPhotos(photos);
-                    rvCollection.setAdapter(collectionAdapter);*/
-                    //  bindLatestAdapternews();
-
 
                     JSONArray jsonArr = null;
                     try {

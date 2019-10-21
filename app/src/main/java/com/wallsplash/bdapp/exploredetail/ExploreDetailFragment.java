@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 
@@ -28,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -56,10 +58,6 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
     RecyclerView rvExplorePhotoById;
     @BindView(R.id.rvExploreCat)
     RecyclerView rvExploreCat;
-    @BindView(R.id.tvCat)
-    TextView tvCat;
-    @BindView(R.id.edtSearch)
-    EditText edtSearch;
     Unbinder unbinder;
     ProgressDialog progressDialog;
     private ExplorePhotoByIdAdapter explorePhotoByIdAdapter;
@@ -86,59 +84,6 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
         ProgressDialogSetup();
         getExploreCat();
-        edtSearch.addTextChangedListener(new TextWatcher() {
-                                             @Override
-                                             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                             }
-
-                                             @Override
-                                             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                                 for (int j = 0; j < exploreCatlist.size(); j++) {
-                                                     if (charSequence.toString().equals(exploreCatlist.get(j).getTitle())) {
-                                                         // rvExploreCat.setVisibility(View.VISIBLE);
-                                                         exploreCatlist.get(j).setSelected(true);
-                                                     } else {
-                                                         // rvExploreCat.setVisibility(View.GONE);
-                                                         exploreCatlist.get(j).setSelected(false);
-                                                     }
-                                                 }
-                                                 exploreCatAdapter.notifyDataSetChanged();
-                                             }
-
-                                             @Override
-                                             public void afterTextChanged(Editable editable) {
-
-                                             }
-                                         }
-        );
-
-        edtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    per_page=1;
-                    exploretitle=edtSearch.getText().toString();
-                    tvCat.setText(exploretitle);
-
-                  /*  for (int i = 0; i < exploreCatlist.size(); i++) {
-                        if (edtSearch.equals(exploreCatlist.get(i).getTitle())) {
-                            // rvExploreCat.setVisibility(View.VISIBLE);
-                            exploreCatlist.get(i).setSelected(true);
-                        } else {
-                            // rvExploreCat.setVisibility(View.GONE);
-                            exploreCatlist.get(i).setSelected(false);
-                        }
-                    }*/
-                    getExplorePhotosById(per_page);
-                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-                    return true;
-                }
-                return false;
-            }
-        });
         return view;
     }
 
@@ -289,8 +234,6 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 progressDialog.dismiss();
 
-                Log.e("Explorcat", response.body().toString());
-
                 if (response.isSuccessful()) {
 
                     exploreCatlist.clear();
@@ -317,14 +260,13 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
                 }
             }
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                  progressDialog.dismiss();
+                Toast.makeText(getContext(), "error is "+t.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -335,9 +277,6 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
             exploreCatAdapter = new ExploreCatAdapter(getActivity(), exploreCatlist);
             rvExploreCat.setAdapter(exploreCatAdapter);
             exploretitle=exploreCatlist.get(0).getTitle();
-            tvCat.setText(exploretitle);
-
-            edtSearch.setText(exploretitle);
 
             exploreCatlist.get(0).setSelected(true);
         }else {
@@ -409,8 +348,6 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
             exploreCatAdapter.notifyDataSetChanged();
             exploretitle= trendingBean.getTitle();
-             tvCat.setText(trendingBean.getTitle());
-             edtSearch.setText(trendingBean.getTitle());
 
             getExplorePhotosById(per_page);
             trendingBean.setSelected(true);
