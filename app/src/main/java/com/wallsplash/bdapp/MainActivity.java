@@ -19,12 +19,14 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.StrictMode;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -263,6 +265,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private void shareMyApplication() {
         try {
+            StrictMode.VmPolicy.Builder builder=new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
             PackageManager pm = getPackageManager();
             ApplicationInfo ai = pm.getApplicationInfo(getPackageName(), 0);
             File srcFile = new File(ai.publicSourceDir);
@@ -272,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(srcFile));
             startActivity(Intent.createChooser(share, "Share App"));
         } catch (Exception e) {
-
+            Toast.makeText(this, "failed for "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
