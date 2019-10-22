@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 loadFragment(new HomeFragment());
                 break;
 
-            case R.id.navigation_explore:
+            case R.id.navigation_hot:
                 getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);

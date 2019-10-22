@@ -16,7 +16,7 @@
         android:textSize="@dimen/titleText"
         android:textColor="@color/colorBlack"
         android:layout_margin="@dimen/m20dp"
-        android:text="@string/explore" />
+        android:text="@string/hot" />
 
 
     <androidx.recyclerview.widget.RecyclerView

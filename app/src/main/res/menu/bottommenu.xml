@@ -6,9 +6,9 @@
         android:title="@string/home"/>
 
     <item
-        android:id="@+id/navigation_explore"
+        android:id="@+id/navigation_hot"
         android:icon="@drawable/ic_explore_active_icon"
-        android:title="@string/explore"/>
+        android:title="@string/hot"/>
 
     <item
         android:id="@+id/navigation_popular"

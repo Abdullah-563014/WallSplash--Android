@@ -336,8 +336,8 @@ public class FavouriteFragment extends Fragment implements ExplorePhotoByIdAdapt
 
     @Override
     public void setOnCategorybyidSelatedListner(int position, ExploreBean exploreBean) {
-        FavouriteFragment favouriteFragment = FavouriteFragment.newInstance(exploreBean.getId());
-        loadFragment(favouriteFragment);
+        DetailFragment newsDetailsFragment = DetailFragment.newInstance(exploreBean.getId());
+        loadFragment(newsDetailsFragment);
     }
 
     @Override

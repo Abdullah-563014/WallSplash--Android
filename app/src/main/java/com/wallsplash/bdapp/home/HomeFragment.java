@@ -370,8 +370,8 @@ public class HomeFragment extends Fragment implements ExplorePhotoByIdAdapter.On
 
     @Override
     public void setOnCategorybyidSelatedListner(int position, ExploreBean exploreBean) {
-        HomeFragment homeFragment = HomeFragment.newInstance(exploreBean.getId());
-        loadFragment(homeFragment);
+        DetailFragment newsDetailsFragment = DetailFragment.newInstance(exploreBean.getId());
+        loadFragment(newsDetailsFragment);
     }
 
     @Override
