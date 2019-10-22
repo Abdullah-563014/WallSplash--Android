@@ -1,6 +1,7 @@
 package com.wallsplash.bdapp.favourite;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -27,26 +30,53 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import com.google.gson.JsonElement;
+import com.wallsplash.bdapp.bean.ExploreBean;
+import com.wallsplash.bdapp.bean.ExploreCatBean;
 import com.wallsplash.bdapp.bean.FavouriteBean;
 import com.wallsplash.bdapp.details.DetailFragment;
+import com.wallsplash.bdapp.exploredetail.ExploreCatAdapter;
+import com.wallsplash.bdapp.exploredetail.ExplorePhotoByIdAdapter;
+import com.wallsplash.bdapp.home.HomeFragment;
+import com.wallsplash.bdapp.retrofit.Config;
+import com.wallsplash.bdapp.retrofit.RestClient;
 import com.wallsplash.bdapp.utils.SharedObjects;
 import com.wallsplash.bdapp.wallsplash.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnCategorybyidSelectedListner {
+public class FavouriteFragment extends Fragment implements ExplorePhotoByIdAdapter.OnCategorybyidSelectedListner, ExplorePhotoByIdAdapter.OnLoadMoreListener, ExploreCatAdapter.OnCategorySelectedListner {
 
 
-    @BindView(R.id.rvFavourite)
-    RecyclerView rvFavourite;
+    @BindView(R.id.llNorecord)
+    LinearLayout llNorecord;
+
+    @BindView(R.id.rvExplorePhotoById)
+    RecyclerView rvExplorePhotoById;
+
+    @BindView(R.id.rvExploreCat)
+    RecyclerView rvExploreCat;
+
     Unbinder unbinder;
-    private FavouriteAdapter favouriteAdapter;
-    private ArrayList<FavouriteBean> favouriteList = new ArrayList<>();
-    private DatabaseReference databaseReference;
-    private AdView mAdView;
-    String uid;
-    SharedObjects sharedObjects;
+    ProgressDialog progressDialog;
+    private ExplorePhotoByIdAdapter explorePhotoByIdAdapter;
+    private ArrayList<ExploreBean> explorePhotosByIdList = new ArrayList<>();
+
+    private ExploreCatAdapter exploreCatAdapter;
+    private ArrayList<ExploreCatBean> exploreCatlist = new ArrayList<>();
+
+    String collectionId;
+    String exploretitle;
+    private int per_page = 1;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -59,43 +89,10 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnCa
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favourite, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mAdView = view.findViewById(R.id.adView);
-        Banner();
-        sharedObjects = new SharedObjects(getActivity());
-        uid = sharedObjects.getUserID();
+        collectionId = "649278";
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.keepSynced(true);
-
-        DatabaseReference userIdRef = databaseReference.child(uid).child("favourites").getRef();
-        userIdRef.keepSynced(true);
-        favouriteList = new ArrayList<>();
-        bindFavouriteData();
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                favouriteList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    FavouriteBean post = ds.getValue(FavouriteBean.class);
-                    String id = ds.getKey();
-                    String url = post.getUrl();
-                    favouriteList.add(new FavouriteBean(id, url));
-                    // favouriteList.add(ds.getValue(FavouriteBean.class));
-                }
-
-                favouriteAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w("LogFragment", "loadLog:onCancelled", databaseError.toException());
-            }
-        };
-        userIdRef.addValueEventListener(valueEventListener);
-//        favouriteAdapter.notifyDataSetChanged();
-
-        //getFavouritePhotos();
+        ProgressDialogSetup();
+        getExploreCat();
         return view;
     }
 
@@ -105,62 +102,213 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnCa
         unbinder.unbind();
     }
 
-    @OnClick(R.id.rvFavourite)
-    public void onViewClicked() {
+    public void ProgressDialogSetup() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("please wait");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
     }
 
+    public static FavouriteFragment newInstance(String ID) {
+        FavouriteFragment favouriteFragment = new FavouriteFragment();
+        Bundle args = new Bundle();
+        args.putString(Config.collectionid, ID);
+        favouriteFragment.setArguments(args);
+        return favouriteFragment;
+    }
 
-    public void Banner() {
-        //mAdView = findViewById(R.id.adView1);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-        mAdView.setAdListener(new AdListener() {
+    private void getExplorePhotosById(final int per_page) {
+        if (per_page == 1) {
+            progressDialog.show();
+        }
+        Call<JsonElement> call1 = RestClient.post().getSearch(exploretitle,per_page,30,Config.unsplash_access_key);
+        call1.enqueue(new Callback<JsonElement>() {
             @Override
-            public void onAdLoaded() {
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                //  progressDialog.dismiss()
+                if (per_page == 1) {
+                    progressDialog.dismiss();
+                }
+                if (response.body() == null) {
+                    explorePhotoByIdAdapter.setLoaded();
+                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                }
+
+                // explorePhotosByIdList.clear();
+                Log.e("FeatureNews", response.body().toString());
+                if (response.isSuccessful()) {
+
+                    // explorePhotosByIdList.clear();
+                    JSONObject jsonArr = null;
+                    try {
+                        jsonArr = new JSONObject(response.body().toString());
+
+                        JSONArray json = jsonArr.getJSONArray("results");
+                        if (per_page == 1) {
+                            explorePhotosByIdList.clear();
+                            if (json.length() > 0) {
+
+                                for (int i = 0; i < json.length(); i++) {
+                                    JSONObject json2 = json.getJSONObject(i);
+                                    String id = json2.getString("id");
+                                    String description=json2.getString("description");
+
+                                    JSONObject object = json2.getJSONObject("urls");
+                                    String url = object.getString("regular");
+                                    explorePhotosByIdList.add(new ExploreBean(id, description, url));
+
+                                }
+                                bindExplorePhotosByIdAdapternews();
+                                //  rvTrending.setAdapter(trendingAdapter);
+
+                            }else {
+                                if (response.body() == null) {
+                                    explorePhotoByIdAdapter.setLoaded();
+                                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                                }else {
+                                    rvExplorePhotoById.setVisibility(View.GONE);
+                                    llNorecord.setVisibility(View.VISIBLE);
+                                }
+
+
+                            }
+                        }else {
+                            if (json.length() > 0) {
+                                explorePhotosByIdList.remove(explorePhotosByIdList.size()-1);
+                                explorePhotoByIdAdapter.notifyItemRemoved(explorePhotosByIdList.size());
+                                for (int i = 0; i < json.length(); i++) {
+                                    JSONObject json2 = json.getJSONObject(i);
+                                    String id = json2.getString("id");
+                                    String description=json2.getString("description");
+
+                                    JSONObject object = json2.getJSONObject("urls");
+                                    String url = object.getString("regular");
+                                    explorePhotosByIdList.add(new ExploreBean(id, description, url));
+                                    explorePhotoByIdAdapter.setLoaded();
+                                    explorePhotoByIdAdapter.notifyDataSetChanged();
+                                }
+                            }else {
+                                explorePhotoByIdAdapter.setLoaded();
+                                explorePhotoByIdAdapter.notifyDataSetChanged();
+                            }
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }else {
+                    if (per_page == 1) {
+                        progressDialog.dismiss();
+                    }
+
+                    explorePhotosByIdList.remove(explorePhotosByIdList.size() - 1);
+                    explorePhotoByIdAdapter.notifyItemRemoved(explorePhotosByIdList.size());
+
+                }
             }
 
             @Override
-            public void onAdFailedToLoad(int errorCode) {
-            }
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                // progressDialog.dismiss();
 
-            @Override
-            public void onAdOpened() {
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-            }
-
-            @Override
-            public void onAdClosed() {
             }
         });
 
-
     }
 
-    private void getAllTask(DataSnapshot dataSnapshot) {
+    private void bindExplorePhotosByIdAdapternews() {
 
-        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+        if (explorePhotosByIdList.size() > 0){
+            llNorecord.setVisibility(View.GONE);
+            rvExplorePhotoById.setVisibility(View.VISIBLE);
+            explorePhotoByIdAdapter = new ExplorePhotoByIdAdapter(getActivity(), explorePhotosByIdList,rvExplorePhotoById);
+            explorePhotoByIdAdapter.setOnCategorybyidSelectedListner(this);
+            explorePhotoByIdAdapter.setOnLoadMoreListener(this);
+            rvExplorePhotoById.setHasFixedSize(true);
+            rvExplorePhotoById.setItemAnimator(null);
+            //  StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+            //rvExplorePhotoById.setLayoutManager(layoutManager);
 
-          /*  String id = singleSnapshot.getValue(String.class);
-            String url = singleSnapshot.getValue(String.class);
-
-            favouriteList.add(new FavouriteBean(id,url));*/
-            favouriteList.add(singleSnapshot.getValue(FavouriteBean.class));
+            rvExplorePhotoById.setAdapter(explorePhotoByIdAdapter);
+        }else {
+            llNorecord.setVisibility(View.VISIBLE);
+            rvExplorePhotoById.setVisibility(View.GONE);
         }
 
-        bindFavouriteData();
     }
 
-    private void bindFavouriteData() {
+    private void getExploreCat() {
 
-        favouriteAdapter = new FavouriteAdapter(getActivity(), favouriteList);
-        favouriteAdapter.setOnCategorybyidSelectedListner(this);
-        rvFavourite.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        rvFavourite.setAdapter(favouriteAdapter);
+//        progressDialog.show();
+
+        Call<JsonElement> call1 = RestClient.post().getExploreCat(collectionId,Config.unsplash_access_key);
+        call1.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                progressDialog.dismiss();
+
+                if (response.isSuccessful()) {
+
+                    exploreCatlist.clear();
+                    JSONObject jsonArr = null;
+                    try {
+                        jsonArr = new JSONObject(response.body().toString());
+
+                        JSONArray jsonArray=jsonArr.getJSONArray("tags");
+
+                        if (jsonArr.length() > 0) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject json2 = jsonArray.getJSONObject(i);
+                                String title = json2.getString("title");
+                                String capsWordTitle = title.substring(0, 1).toUpperCase() + title.substring(1);
+
+
+                                exploreCatlist.add(new ExploreCatBean(capsWordTitle,false));
+
+                            }
+                            bindCategoryAdapter();
+                            //  rvTrending.setAdapter(trendingAdapter);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "error is "+t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
+    private void bindCategoryAdapter() {
+        if (exploreCatlist.size() > 0){
+            exploreCatAdapter = new ExploreCatAdapter(getActivity(), exploreCatlist);
+            rvExploreCat.setAdapter(exploreCatAdapter);
+            exploretitle=exploreCatlist.get(0).getTitle();
+
+            exploreCatlist.get(0).setSelected(true);
+        }else {
+
+        }
+
+        exploreCatAdapter.setOnCategorySelectedListner(this);
+
+        exploreCatAdapter.notifyDataSetChanged();
+
+        getExplorePhotosById(per_page);
+    }
+
+    @OnClick(R.id.rvExplorePhotoById)
+    public void onViewClicked() {
+    }
 
     private void loadFragment(Fragment fragment) {
         String backStateName = fragment.getClass().getName();
@@ -172,29 +320,51 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnCa
             ft.hide(FavouriteFragment.this);
             ft.addToBackStack(backStateName);
             ft.commit();
-        } else {
+        }else {
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.add(R.id.fl_container, fragment, null);
             ft.hide(FavouriteFragment.this);
-            if (fragment instanceof DetailFragment) {
+            if (fragment instanceof HomeFragment){
 
-            } else {
+            }else {
                 ft.addToBackStack(backStateName);
             }
             //ft.addToBackStack(backStateName);
             ft.commit();
-          /*  for(int entry = 0; entry < fragmentManager.getBackStackEntryCount(); entry++){
-                //Log.i(TAG, "Found fragment: " + fragmentManager.getBackStackEntryAt(entry).getId());
-                DetailFragment fragment1= (DetailFragment) getChildFragmentManager().findFragmentById(fragmentManager.getBackStackEntryAt(entry).getId());
-                fragment1.refreshData(fragment.getArguments());
-            }*/
         }
     }
 
     @Override
-    public void setOnCategorybyidSelatedListner(int position, FavouriteBean favouriteBean) {
-        DetailFragment newsDetailsFragment = DetailFragment.newInstance(favouriteBean.getId());
-        loadFragment(newsDetailsFragment);
+    public void setOnCategorybyidSelatedListner(int position, ExploreBean exploreBean) {
+        FavouriteFragment favouriteFragment = FavouriteFragment.newInstance(exploreBean.getId());
+        loadFragment(favouriteFragment);
+    }
+
+    @Override
+    public void onLoadMore() {
+        Log.e("haint", "Load More");
+        if (!explorePhotoByIdAdapter.isLoading) {
+            explorePhotosByIdList.add(null);
+            explorePhotoByIdAdapter.notifyDataSetChanged();
+            per_page++;
+            getExplorePhotosById(per_page);
+        }
+    }
+
+    @Override
+    public void setOnCategorySelatedListner(int position, ExploreCatBean trendingBean) {
+        per_page = 1;
+        for (int i = 0; i < exploreCatlist.size(); i++) {
+            exploreCatlist.get(i).setSelected(false);
+        }
+        if (exploreCatlist.size()>0){
+
+            exploreCatAdapter.notifyDataSetChanged();
+            exploretitle= trendingBean.getTitle();
+
+            getExplorePhotosById(per_page);
+            trendingBean.setSelected(true);
+        }
     }
 }
 

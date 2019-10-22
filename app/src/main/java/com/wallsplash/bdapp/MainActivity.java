@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import com.wallsplash.bdapp.explore.ExploreFragment;
+import com.wallsplash.bdapp.exploredetail.ExploreDetailFragment;
 import com.wallsplash.bdapp.favourite.FavouriteFragment;
 import com.wallsplash.bdapp.home.HomeFragment;
 import com.wallsplash.bdapp.retrofit.Config;
@@ -147,8 +148,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
-
-
     @OnClick({R.id.ivDrawer, R.id.ivlogout, R.id.bottom_navigation})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -177,13 +176,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 ivProfile.setVisibility(View.VISIBLE);
                 loadFragment(new HomeFragment());
                 break;
+
             case R.id.navigation_explore:
                 getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);
-                loadFragment(new ExploreFragment());
+                loadFragment(new ExploreDetailFragment());
                 break;
-            case R.id.navigation_favourite:
+
+            case R.id.navigation_popular:
                 getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);
@@ -234,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
       //  drawer.closeDrawers();
     }
+
     public void onBackPressed() {
         ivProfile.setVisibility(View.VISIBLE);
         ivlogout.setVisibility(View.GONE);

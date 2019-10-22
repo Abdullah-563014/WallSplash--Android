@@ -11,9 +11,9 @@
         android:title="@string/explore"/>
 
     <item
-        android:id="@+id/navigation_favourite"
+        android:id="@+id/navigation_popular"
         android:icon="@drawable/ic_favourite_active_icon"
-        android:title="@string/favourite"/>
+        android:title="@string/popular"/>
      <item
         android:id="@+id/navigation_share"
          android:icon="@drawable/ic_share_active_icon"

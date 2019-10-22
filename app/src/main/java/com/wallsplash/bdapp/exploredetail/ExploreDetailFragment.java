@@ -80,7 +80,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_explore_detail, container, false);
         unbinder = ButterKnife.bind(this, view);
-        collectionId = getArguments().getString(Config.collectionid);
+        collectionId = "1118894";
 
         ProgressDialogSetup();
         getExploreCat();
@@ -232,7 +232,8 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
     private void getExploreCat() {
 
-        progressDialog.show();
+//        progressDialog.show();
+
         Call<JsonElement> call1 = RestClient.post().getExploreCat(collectionId,Config.unsplash_access_key);
         call1.enqueue(new Callback<JsonElement>() {
             @Override

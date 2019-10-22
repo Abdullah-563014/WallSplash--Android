@@ -28,7 +28,7 @@
     <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
     <string name="home">Home</string>
     <string name="explore">Explore</string>
-    <string name="favourite">Favourite</string>
+    <string name="popular">Popular</string>
     <string name="share">Share</string>
     <string name="app_backpress">Press again to exit</string>
     <string name="cancel">Cancel</string>
