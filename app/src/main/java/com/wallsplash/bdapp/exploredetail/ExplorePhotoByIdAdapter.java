@@ -105,11 +105,11 @@ public class ExplorePhotoByIdAdapter extends RecyclerView.Adapter<RecyclerView.V
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(myHolder.imgview);
 
-            String title=exploreList.get(position).getTitle();
-            if (title==null || TextUtils.isEmpty(title) || title.equalsIgnoreCase("null")){
-                title="No Title";
-            }
-            myHolder.title.setText(title);
+//            String title=exploreList.get(position).getTitle();
+//            if (title==null || TextUtils.isEmpty(title) || title.equalsIgnoreCase("null")){
+//                title="No Title";
+//            }
+//            myHolder.title.setText(title);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 //  private RecyclerView rvevenment;
@@ -141,15 +141,17 @@ public class ExplorePhotoByIdAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public class MyViewholder extends RecyclerView.ViewHolder {
         ImageView imgview;
-        TextView title;
+//        TextView title;
 
 
         public MyViewholder(View itemView) {
             super(itemView);
             imgview = (ImageView) itemView.findViewById(R.id.imgview);
-            title=itemView.findViewById(R.id.trendingPhotoByIdTitleTextViewId);
+//            title=itemView.findViewById(R.id.trendingPhotoByIdTitleTextViewId);
         }
     }
+
+
     static class LoadingViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar progressBar;
 

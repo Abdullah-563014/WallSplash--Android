@@ -1,88 +1,44 @@
 package com.wallsplash.bdapp.home;
 
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import com.wallsplash.bdapp.MainActivity;
+
 import com.wallsplash.bdapp.bean.ExploreBean;
 import com.wallsplash.bdapp.bean.ExploreCatBean;
 import com.wallsplash.bdapp.exploredetail.ExploreCatAdapter;
-import com.wallsplash.bdapp.exploredetail.ExploreDetailFragment;
 import com.wallsplash.bdapp.exploredetail.ExplorePhotoByIdAdapter;
-import com.wallsplash.bdapp.search.SearchFragment;
-import com.wallsplash.bdapp.bean.PhotosBean;
-import com.wallsplash.bdapp.bean.TrendingBean;
 import com.wallsplash.bdapp.details.DetailFragment;
 import com.wallsplash.bdapp.retrofit.Config;
 import com.wallsplash.bdapp.retrofit.RestClient;
-import com.wallsplash.bdapp.utils.SharedObjects;
 import com.wallsplash.bdapp.wallsplash.R;
 
 /**

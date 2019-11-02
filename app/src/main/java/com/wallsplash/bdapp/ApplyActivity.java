@@ -51,8 +51,6 @@ public class ApplyActivity extends AppCompatActivity {
     ImageView ivWallpaper;
     @BindView(R.id.btnAplay)
     Button btnAplay;
-    @BindView(R.id.cv_like)
-    CheckBox cvLike;
     String photoid;
     WallpaperManager wallpaperManager ;
     Bitmap bitmap1, bitmap2 ;
@@ -69,12 +67,14 @@ public class ApplyActivity extends AppCompatActivity {
         PhotoDetails();
 
     }
+
     public void ProgressDialogSetup() {
         progressDialog = new ProgressDialog(ApplyActivity.this);
         progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
     }
+
     private void PhotoDetails() {
         progressDialog.show();
         Call<JsonElement> call1 = RestClient.post().getPhotosById(photoid, Config.unsplash_access_key);
@@ -95,75 +95,10 @@ public class ApplyActivity extends AppCompatActivity {
                                 final String id=jsonArr.getString("id");
 
                                 JSONObject object=jsonArr.getJSONObject("urls");
-                                final String url=object.getString("regular");
+                                final String url=object.getString("thumb");
                                 Picasso.get()
                                         .load(url)
                                         .into(ivWallpaper);
-
-//This section is commented by Md. Abdullah
-//This section is commented by Md. Abdullah
-//This section is commented by Md. Abdullah
-
-//                                if (FirebaseAuth.getInstance().getCurrentUser()==null){
-//
-//                                }else {
-//                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//                                    ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("favourites").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()) {
-//                                                // use "username" already exists
-//                                                // Let the user know he needs to pick another username.
-//                                                cvLike.setChecked(true);
-//                                            } else {
-//                                                // User does not exist. NOW call createUserWithEmailAndPassword
-//                                                // Your previous code here.
-//                                                cvLike.setChecked(false);
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//                                }
-//                                cvLike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                                    @Override
-//                                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//
-//                                        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-//                                            Toast.makeText(ApplyActivity.this, "login require", Toast.LENGTH_SHORT).show();
-//                                            compoundButton.setChecked(false);
-//                                            return;
-//                                        }
-//                                        String uid;
-//                                        SharedObjects sharedObjects;
-//                                        sharedObjects = new SharedObjects(ApplyActivity.this);
-//                                        uid = sharedObjects.getUserID();
-//                                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-//                                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                                .child("favourites")
-//                                                .child(id);
-//
-//                                        if (b) {
-//
-//                                            databaseReference.child("Id").setValue(id);
-//                                            databaseReference.child("url").setValue(url);
-//                                        } else {
-//
-//                                            databaseReference.child("Id").removeValue();
-//                                            databaseReference.child("url").removeValue();
-//                                        }
-//
-//
-//                                    }
-//                                });
-
-//This section is commented by Md. Abdullah
-//This section is commented by Md. Abdullah
-//This section is commented by Md. Abdullah
-
 
                             }
 
@@ -185,6 +120,7 @@ public class ApplyActivity extends AppCompatActivity {
         });
 
     }
+
     private void saveImageToExternalStorage(Bitmap finalBitmap) {
         // String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
 
@@ -225,6 +161,7 @@ public class ApplyActivity extends AppCompatActivity {
 
 
     }
+
     @OnClick({R.id.ivWallpaper, R.id.btnAplay,R.id.cv_download})
     public void onViewClicked(View view) {
         switch (view.getId()) {

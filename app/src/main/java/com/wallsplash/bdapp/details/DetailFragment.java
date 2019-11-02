@@ -18,8 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,11 +25,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 
 import org.json.JSONArray;
@@ -142,19 +136,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
         unbinder.unbind();
     }
 
-   /* @Override
-    public void onResume() {
-        super.onResume();
-        photoId = getArguments().getString(Config.photoid);
-        getPhotosById();
-    }
-*/
-    /*@Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        photoId = getArguments().getString(Config.photoid);
-        getPhotosById();
-    }*/
+
 
     public static DetailFragment newInstance(String ID) {
         DetailFragment exploreDetailFragment = new DetailFragment();
@@ -173,7 +155,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
 
                 progressDialog.dismiss();
                 relatedPhotoslist.clear();
-                Log.e("photobyid", response.body().toString());
+                Log.d("photobyid", response.body().toString());
                 if (response.isSuccessful()) {
 
                     JSONObject json2 = null;
@@ -186,12 +168,12 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
                             alt_description = json2.getString("alt_description");
 
                             JSONObject object = json2.getJSONObject("urls");
-                            final String url = object.getString("regular");
+                            final String url = object.getString("thumb");
                             JSONObject jsonObjectlink = json2.getJSONObject("links");
                             sharlink = jsonObjectlink.getString("html");
                             JSONObject objectUser = json2.getJSONObject("user");
                             JSONObject objectUserProfile = objectUser.getJSONObject("profile_image");
-                            String userprofile = objectUserProfile.getString("large");
+                            String userprofile = objectUserProfile.getString("small");
                             username = objectUser.getString("username");
 
                             String name = objectUser.getString("name");
@@ -212,73 +194,6 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
                             tvUserName.setText(name);
                             tvDesc.setText(alt_description);
 
-// This section is commented by Md. Abdullah
-// This section is commented by Md. Abdullah
-// This section is commented by Md. Abdullah
-
-//                            if (FirebaseAuth.getInstance().getCurrentUser()==null){
-//
-//                            }
-//                            else {
-//                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//                                ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("favourites").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                                        if (isVisible()) {
-//                                            if (dataSnapshot.exists()) {
-//                                                // use "username" already exists
-//                                                // Let the user know he needs to pick another username.
-//                                                cvLike.setChecked(true);
-//                                            } else {
-//                                                // User does not exist. NOW call createUserWithEmailAndPassword
-//                                                // Your previous code here.
-//                                                cvLike.setChecked(false);
-//                                            }
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//                            }
-//                            cvLike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                                @Override
-//                                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//
-//                                    if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-//                                        Toast.makeText(getActivity(), "login require", Toast.LENGTH_SHORT).show();
-//                                        compoundButton.setChecked(false);
-//                                        return;
-//                                    }
-//                                    String uid;
-//                                    SharedObjects sharedObjects;
-//                                    sharedObjects = new SharedObjects(getActivity());
-//                                    uid = sharedObjects.getUserID();
-//                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-//                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                            .child("favourites")
-//                                            .child(id);
-//
-//                                    if (b) {
-//
-//                                        databaseReference.child("Id").setValue(id);
-//                                        databaseReference.child("url").setValue(url);
-//                                    } else {
-//
-//                                        databaseReference.child("Id").removeValue();
-//                                        databaseReference.child("url").removeValue();
-//                                    }
-//
-//
-//                                }
-//                            });
-
-// This section is commented by Md. Abdullah
-// This section is commented by Md. Abdullah
-// This section is commented by Md. Abdullah
-
 
                             JSONObject objectRelated = json2.getJSONObject("related_collections");
                             JSONArray array = objectRelated.getJSONArray("results");
@@ -288,7 +203,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
 
                                     JSONObject jsonObject1 = jsonObject.getJSONObject("cover_photo");
                                     JSONObject objectCoverPhoto = jsonObject1.getJSONObject("urls");
-                                    String coverUrl = objectCoverPhoto.getString("regular");
+                                    String coverUrl = objectCoverPhoto.getString("thumb");
                                     String idRelated = jsonObject1.getString("id");
                                     relatedPhotoslist.add(new RelatedBean(idRelated, coverUrl));
 
@@ -381,6 +296,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
 
 
     }
+
     @OnClick({R.id.ivUserProfile, R.id.cv_Share, R.id.cv_download, R.id.ll_portfolio, R.id.ivBack,R.id.ivPhoto})
     public void onViewClicked(View view) {
         switch (view.getId()) {

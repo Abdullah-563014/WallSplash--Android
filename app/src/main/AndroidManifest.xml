@@ -44,10 +44,6 @@
             android:theme="@style/AppTheme.NoTitleBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.wallsplash.bdapp.StratupActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name="com.wallsplash.bdapp.ApplyActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />

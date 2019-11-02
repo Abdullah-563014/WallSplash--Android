@@ -5,8 +5,8 @@
         <!-- Customize your theme here. -->
 <!--        <item name="colorPrimary">#FF9800</item>-->
 <!--        <item name="colorPrimaryDark">#ADB92B</item>-->
-        <item name="colorPrimary">#7E8345</item>
-        <item name="colorPrimaryDark">#ff6781</item>
+        <item name="colorPrimary">#F0889A</item>
+        <item name="colorPrimaryDark">#FC5672</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="AppTheme.NoActionBar">
@@ -16,7 +16,6 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.NoTitleBar" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowLightStatusBar">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
