@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:gravity="center"
+    android:background="@drawable/splash_background"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@drawable/background"
     tools:context="com.wallsplash.bdapp.SplashActivity">
-
+    <ImageView
+        android:id="@+id/splashActivityImageViewId"
+        android:src="@drawable/wallpaper"
+        android:layout_width="120dp"
+        android:layout_height="120dp" />
+    <TextView
+        android:id="@+id/splashActivityWelcomeTextViewId"
+        android:text="Welcome"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/splashActivityGreetingViewId"
+        android:text="In WallSplash Application"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
