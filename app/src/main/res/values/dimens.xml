@@ -8,5 +8,4 @@
     <dimen name="titleText">20sp</dimen>
     <dimen name="m15dp">15dp</dimen>
     <dimen name="m5dp">5dp</dimen>
-    <dimen name="m25dp">25dp</dimen>
 </resources>

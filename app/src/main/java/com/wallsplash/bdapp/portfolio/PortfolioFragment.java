@@ -101,6 +101,7 @@ public class PortfolioFragment extends Fragment implements PortfolioPhotosAdapte
         super.onDestroyView();
         unbinder.unbind();
     }
+
     private void getPhotosById() {
         progressDialog.show();
         Call<JsonElement> call1 = RestClient.post().getPortfolio(username, Config.unsplash_access_key);
@@ -131,7 +132,7 @@ public class PortfolioFragment extends Fragment implements PortfolioPhotosAdapte
                             String following_count=json2.getString("following_count");
                             tvFollowingCount.setText(following_count);
                             JSONObject objectUserProfile=json2.getJSONObject("profile_image");
-                            String userprofile=objectUserProfile.getString("large");
+                            String userprofile=objectUserProfile.getString("small");
 
                             Glide.with(getActivity()).load(userprofile)
                                     .thumbnail(0.5f)
@@ -149,7 +150,7 @@ public class PortfolioFragment extends Fragment implements PortfolioPhotosAdapte
                                     String id1=jsonObject.getString("id");
 
                                     JSONObject objectCoverPhoto=jsonObject.getJSONObject("urls");
-                                    String coverUrl=objectCoverPhoto.getString("regular");
+                                    String coverUrl=objectCoverPhoto.getString("thumb");
 
                                     portfolioPhotoslist.add(new PortfolioBean(id1,coverUrl));
                                 }
@@ -176,6 +177,7 @@ public class PortfolioFragment extends Fragment implements PortfolioPhotosAdapte
         });
 
     }
+
     private void bindRelatedData() {
 
         if (portfolioPhotoslist.size() > 0){
@@ -187,6 +189,7 @@ public class PortfolioFragment extends Fragment implements PortfolioPhotosAdapte
         }
 
     }
+
     @OnClick({R.id.tvUsername, R.id.tvLocation})
     public void onViewClicked(View view) {
         switch (view.getId()) {

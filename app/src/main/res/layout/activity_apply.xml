@@ -36,12 +36,12 @@
                 android:layout_height="36dp"
                 android:layout_marginLeft="@dimen/m20dp"
                 android:layout_marginRight="@dimen/m20dp"
-                android:background="@drawable/bg_btn_apply"
+                android:background="@drawable/apply_button_background"
                 android:gravity="center"
                 android:paddingLeft="@dimen/m30dp"
                 android:paddingRight="@dimen/m30dp"
                 android:text="apply"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/colorWhite"
                 android:textSize="@dimen/primaryText" />
 
 
