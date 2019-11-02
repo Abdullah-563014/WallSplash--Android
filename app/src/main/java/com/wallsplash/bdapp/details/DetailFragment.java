@@ -74,8 +74,6 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
     TextView tvUserName;
     @BindView(R.id.cv_Share)
     ImageView cvShare;
-    @BindView(R.id.cv_like)
-    CheckBox cvLike;
     @BindView(R.id.ivPhoto)
     ImageView ivPhoto;
     @BindView(R.id.cv_download)

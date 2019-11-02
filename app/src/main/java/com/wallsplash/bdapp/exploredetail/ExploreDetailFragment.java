@@ -145,7 +145,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
                                     String description=json2.getString("description");
 
                                     JSONObject object = json2.getJSONObject("urls");
-                                    String url = object.getString("regular");
+                                    String url = object.getString("thumb");
                                     explorePhotosByIdList.add(new ExploreBean(id, description, url));
 
                                 }
@@ -173,7 +173,7 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
                                     String description=json2.getString("description");
 
                                     JSONObject object = json2.getJSONObject("urls");
-                                    String url = object.getString("regular");
+                                    String url = object.getString("thumb");
                                     explorePhotosByIdList.add(new ExploreBean(id, description, url));
                                     explorePhotoByIdAdapter.setLoaded();
                                     explorePhotoByIdAdapter.notifyDataSetChanged();

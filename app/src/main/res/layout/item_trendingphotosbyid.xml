@@ -5,17 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/_170sdp"
     android:layout_margin="1dp">
-        <RelativeLayout
-            android:layout_width="@dimen/_170sdp"
+
+    <RelativeLayout
+        android:layout_width="@dimen/_170sdp"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/imgview"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/imgview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_placeholder_photos"
-                android:scaleType="centerCrop" />
-
-        </RelativeLayout>
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder_photos" />
+    </RelativeLayout>
 </RelativeLayout>

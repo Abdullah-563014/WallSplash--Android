@@ -28,7 +28,7 @@
         android:nestedScrollingEnabled="false"
         android:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="3"
+        app:spanCount="2"
         tools:listitem="@layout/item_trendingphotosbyid" />
 
     <LinearLayout

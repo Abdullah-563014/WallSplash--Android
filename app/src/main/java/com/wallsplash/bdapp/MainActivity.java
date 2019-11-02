@@ -113,40 +113,40 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Intent intent = getIntent();
 
 
-        getprofileImage();
+//        getprofileImage();
     }
 
     //sign out method
-    private void getprofileImage() {
-
-        storage = FirebaseStorage.getInstance();
-
-        uid = "images/" + sharedObjects.getUserID();
-        // if (intent.hasExtra("uid")) {
-        //   String uid = intent.getStringExtra("uid");
-        storageRef = storage.getReferenceFromUrl(Config.DatabasePATH).child((uid));
-        // }
-
-
-        try {
-            final File localFile = File.createTempFile("images", "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    ivProfile.setImageBitmap(bitmap);
-
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    exception.printStackTrace();
-                }
-            });
-        } catch (IOException e) {
-        }
-    }
+//    private void getprofileImage() {
+//
+//        storage = FirebaseStorage.getInstance();
+//
+//        uid = "images/" + sharedObjects.getUserID();
+//        // if (intent.hasExtra("uid")) {
+//        //   String uid = intent.getStringExtra("uid");
+//        storageRef = storage.getReferenceFromUrl(Config.DatabasePATH).child((uid));
+//        // }
+//
+//
+//        try {
+//            final File localFile = File.createTempFile("images", "jpg");
+//            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                    bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+//                    ivProfile.setImageBitmap(bitmap);
+//
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    exception.printStackTrace();
+//                }
+//            });
+//        } catch (IOException e) {
+//        }
+//    }
 
     @OnClick({R.id.ivDrawer, R.id.ivlogout, R.id.bottom_navigation})
     public void onViewClicked(View view) {
@@ -171,21 +171,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         switch (item.getItemId()) {
             // Home
             case R.id.navigation_home:
-                getprofileImage();
+//                getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);
                 loadFragment(new HomeFragment());
                 break;
 
             case R.id.navigation_hot:
-                getprofileImage();
+//                getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);
                 loadFragment(new ExploreDetailFragment());
                 break;
 
             case R.id.navigation_popular:
-                getprofileImage();
+//                getprofileImage();
                 ivlogout.setVisibility(View.GONE);
                 ivProfile.setVisibility(View.VISIBLE);
                 loadFragment(new FavouriteFragment());
@@ -202,16 +202,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 1) {
-            getprofileImage();
+//            getprofileImage();
             ivlogout.setVisibility(View.VISIBLE);
             ivProfile.setVisibility(View.GONE);
         }else if (resultCode==2){
-            getprofileImage();
+//            getprofileImage();
             ivlogout.setVisibility(View.GONE);
             ivProfile.setVisibility(View.VISIBLE);
             loadFragment(new FavouriteFragment());
         }else if (resultCode==0) {
-            getprofileImage();
+//            getprofileImage();
             ivProfile.setVisibility(View.VISIBLE);
             ivlogout.setVisibility(View.GONE);
             loadFragment(new HomeFragment());
@@ -239,11 +239,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onBackPressed() {
         ivProfile.setVisibility(View.VISIBLE);
         ivlogout.setVisibility(View.GONE);
-        getprofileImage();
+//        getprofileImage();
         FragmentManager fragmentManager = getSupportFragmentManager();
         // fragmentManager.popBackStackImmediate();
         if (fragmentManager.getBackStackEntryCount() == 1) {
-            getprofileImage();
+//            getprofileImage();
             if (clickAgainToExit) {
 
                 super.onBackPressed();
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
             }, 2000);
         } else {
-            getprofileImage();
+//            getprofileImage();
             super.onBackPressed();
         }
     }
