@@ -2,7 +2,10 @@ package com.wallsplash.bdapp.favourite;
 
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -81,6 +84,7 @@ public class FavouriteFragment extends Fragment implements ExplorePhotoByIdAdapt
     public FavouriteFragment() {
         // Required empty public constructor
     }
+
 
 
     @Override

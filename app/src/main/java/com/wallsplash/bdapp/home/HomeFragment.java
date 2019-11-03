@@ -2,8 +2,10 @@ package com.wallsplash.bdapp.home;
 
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,6 +41,7 @@ import com.wallsplash.bdapp.exploredetail.ExplorePhotoByIdAdapter;
 import com.wallsplash.bdapp.details.DetailFragment;
 import com.wallsplash.bdapp.retrofit.Config;
 import com.wallsplash.bdapp.retrofit.RestClient;
+import com.wallsplash.bdapp.utils.SharedObjects;
 import com.wallsplash.bdapp.wallsplash.R;
 
 /**

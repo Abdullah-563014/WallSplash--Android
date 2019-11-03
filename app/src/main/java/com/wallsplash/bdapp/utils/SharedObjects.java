@@ -3,7 +3,10 @@ package com.wallsplash.bdapp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Patterns;
@@ -35,6 +38,29 @@ public class SharedObjects {
     SharedPreferences sharedPreference;
     SharedPreferences.Editor editor;
     public SharedObjects() {
+    }
+
+    public static boolean haveInternet(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT>=23) {
+            Network network = connectivityManager.getActiveNetwork();
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            if (capabilities == null) {
+                return false;
+            }
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)){
+                return true;
+            }else {
+                return false;
+            }
+        } else {
+            return connectivityManager.getActiveNetworkInfo() != null &&
+                    connectivityManager.getActiveNetworkInfo().isConnected();
+        }
     }
 
     public static Context getContext() {

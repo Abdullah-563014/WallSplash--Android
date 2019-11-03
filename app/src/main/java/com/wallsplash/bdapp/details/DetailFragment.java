@@ -2,6 +2,7 @@ package com.wallsplash.bdapp.details;
 
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -98,6 +100,8 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
     public DetailFragment() {
         // Required empty public constructor
     }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -203,7 +207,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
 
                                     JSONObject jsonObject1 = jsonObject.getJSONObject("cover_photo");
                                     JSONObject objectCoverPhoto = jsonObject1.getJSONObject("urls");
-                                    String coverUrl = objectCoverPhoto.getString("thumb");
+                                    String coverUrl = objectCoverPhoto.getString("small");
                                     String idRelated = jsonObject1.getString("id");
                                     relatedPhotoslist.add(new RelatedBean(idRelated, coverUrl));
 

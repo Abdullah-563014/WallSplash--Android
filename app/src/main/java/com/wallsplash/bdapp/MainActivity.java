@@ -1,5 +1,6 @@
 package com.wallsplash.bdapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -194,4 +196,33 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!SharedObjects.haveInternet(getApplicationContext())){
+            noInternetAlertDialog();
+        }
+    }
+
+    private void noInternetAlertDialog(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setMessage("Sorry, You have no any internet connection. Please check your internet connection and try again.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        if (fragmentManager.getBackStackEntryCount() == 1){
+                            MainActivity.super.onBackPressed();
+                            finish();
+                        }else {
+                            finish();
+                        }
+                    }
+                });
+        AlertDialog alertDialog=builder.create();
+        if (!isFinishing()){
+            alertDialog.show();
+        }
+    }
 }

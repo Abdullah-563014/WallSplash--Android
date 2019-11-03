@@ -27,7 +27,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorBlack"/>
         </LinearLayout>
 
 

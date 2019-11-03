@@ -1,9 +1,11 @@
 package com.wallsplash.bdapp;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.wallsplash.bdapp.utils.SharedObjects;
 import com.wallsplash.bdapp.wallsplash.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -108,4 +111,5 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(new Intent(SplashActivity.this,MainActivity.class));
         finish();
     }
+
 }
