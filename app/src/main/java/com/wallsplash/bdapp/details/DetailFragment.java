@@ -172,7 +172,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
                             alt_description = json2.getString("alt_description");
 
                             JSONObject object = json2.getJSONObject("urls");
-                            final String url = object.getString("thumb");
+                            final String url = object.getString("regular");
                             JSONObject jsonObjectlink = json2.getJSONObject("links");
                             sharlink = jsonObjectlink.getString("html");
                             JSONObject objectUser = json2.getJSONObject("user");
@@ -207,7 +207,7 @@ public class DetailFragment extends Fragment implements RelatedPhotosAdapter.OnP
 
                                     JSONObject jsonObject1 = jsonObject.getJSONObject("cover_photo");
                                     JSONObject objectCoverPhoto = jsonObject1.getJSONObject("urls");
-                                    String coverUrl = objectCoverPhoto.getString("small");
+                                    String coverUrl = objectCoverPhoto.getString("thumb");
                                     String idRelated = jsonObject1.getString("id");
                                     relatedPhotoslist.add(new RelatedBean(idRelated, coverUrl));
 

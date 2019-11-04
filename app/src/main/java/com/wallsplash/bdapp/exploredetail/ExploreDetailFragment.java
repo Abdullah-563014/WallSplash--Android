@@ -237,13 +237,13 @@ public class ExploreDetailFragment extends Fragment implements ExplorePhotoByIdA
 
     private void getExploreCat() {
 
-//        progressDialog.show();
+        progressDialog.show();
 
         Call<JsonElement> call1 = RestClient.post().getExploreCat(collectionId,Config.unsplash_access_key);
         call1.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                progressDialog.dismiss();
+//                progressDialog.dismiss();
 
                 if (response.isSuccessful()) {
 

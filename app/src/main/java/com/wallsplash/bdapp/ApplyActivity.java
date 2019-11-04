@@ -95,7 +95,7 @@ public class ApplyActivity extends AppCompatActivity {
                                 final String id=jsonArr.getString("id");
 
                                 JSONObject object=jsonArr.getJSONObject("urls");
-                                final String url=object.getString("thumb");
+                                final String url=object.getString("regular");
                                 Picasso.get()
                                         .load(url)
                                         .into(ivWallpaper);
