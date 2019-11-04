@@ -26,7 +26,7 @@
         android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/splashActivityGreetingViewId"
-        android:text="In WallSplash Application"
+        android:text="@string/greating_text"
         android:textColor="@color/colorWhite"
         android:gravity="center"
         android:textSize="25sp"
