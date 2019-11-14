@@ -88,7 +88,6 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="paddingPercent" value="5" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -101,8 +100,8 @@
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="backgroundColor" value="ff5c38" />
-                                      <entry key="imageAsset" value="D:\Downloads\wallpaper.png" />
-                                      <entry key="outputName" value="my_launcher_icon" />
+                                      <entry key="imageAsset" value="D:\Downloads\icon-wall.jpg" />
+                                      <entry key="outputName" value="launcher_image" />
                                     </map>
                                   </option>
                                 </PersistentState>

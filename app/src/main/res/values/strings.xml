@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">My WallPaper</string>
+    <string name="app_name">Hot Bikini Girl</string>
   <!--  <string name="banner_app_id">ca-app-pub-5001555525411212~9724165449</string>
     <string name="banner_ad_id">ca-app-pub-5001555525411212/5784920435</string>-->
 
     <!--<string name="admob_app_id">ca-app-pub-1033682613036596~2613269091</string>-->
 
-    <string name="greating_text">In My WallPaper App</string>
+    <string name="greating_text">In Hot Bikini Girl App</string>
     <string name="please_wait">Please wait</string>
     <string name="home">Home</string>
     <string name="hot">Hot</string>
